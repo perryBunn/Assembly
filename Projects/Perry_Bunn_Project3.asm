@@ -20,13 +20,35 @@ ExitProcess PROTO, dwExitCode:DWORD
 	output byte LENGTHOF input DUP(?)
 	
 	; Create a DWORD variable with the label ‘shift’. ‘shift’ s hould hold a single value. The value of ‘shift’ must be less than the length of ‘input’.
-	shift dword ? 
+	shift dword ? ; Does this mean that it can be any int less than 8?
 
 .code 
 	; The program should then read each of the values from the array ‘input’ and place the values into the ‘output’ array but the location should be shifted by the amount in the ‘shift’ variable. If the shift would cause a value to be outside of the bounds of ‘output’, then the values should “wrap around” to the front of ‘output’.
 	main proc
 
 		; Begin code....
+		xor eax, eax		; clear EAX
+		xor ebx, ebx		; clear EBX
+		mov ecx, shift 		; mov the Shift variable to ECX
+
+		M1:
+			neg ecx 
+			mov al, input[LENGTHOF input + ecx]
+			mov output[ebx], al
+			neg ecx
+			inc ebx
+		loop M1
+
+		mov ecx, LENGTHOF input
+		sub ecx, shift
+		xor edx, edx
+
+		M2:
+			mov al, input[edx]
+			mov output[ebx], al
+			inc ebx
+			inc edx
+		loop M2
 
 		INVOKE ExitProcess, 0
 	end MAINP
